@@ -36,6 +36,11 @@ export class TextObject extends DrawnObjectBase {
     public get text() {return this._text;}
     public set text(v : string) {
         //=== YOUR CODE HERE ===
+        if (v !== this._text) {
+            this._text = v;
+            // Declare damage
+            this.damageAll();
+        }
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -68,6 +73,11 @@ export class TextObject extends DrawnObjectBase {
     public get font() {return this._font;}
     public set font(v : string) {
         //=== YOUR CODE HERE ===
+        if (v !== this._font) {
+            this._font = v;
+            // Declare damage
+            this.damageAll();
+        }
     }  
     
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -80,6 +90,11 @@ export class TextObject extends DrawnObjectBase {
     public set padding(v : SizeLiteral | number) {
         if (typeof v === 'number') v = {w:v, h:v};
         //=== YOUR CODE HERE ===
+        if (v.w !== this._padding.w || v.h !== this._padding.h) {
+            this._padding = v;
+            // Declare damage
+            this.damageAll();
+        }
     }
     
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
@@ -107,8 +122,10 @@ export class TextObject extends DrawnObjectBase {
     // Recalculate the size of this object based on the size of the text
     protected _recalcSize(ctx? : DrawContext) : void {
         //=== YOUR CODE HERE ===
-
-        // set the size configuration to be fixed at that size
+        const meas = this._measureText(this.text, this.font, ctx);
+        // Calculates new size based on text size and padding
+        this.w = meas.w + this.padding.w * 2;
+        this.h = meas.h + this.padding.h * 2;
         this.wConfig = SizeConfig.fixed(this.w);
         this.hConfig = SizeConfig.fixed(this.h);
     }
@@ -134,6 +151,20 @@ export class TextObject extends DrawnObjectBase {
             }
             
             //=== YOUR CODE HERE ===
+            // From TextObject_debug
+            ctx.font = this.font;
+            ctx.direction = 'ltr';
+            ctx.textAlign = 'left'; 
+            const meas = this._measureText(this.text, this.font, ctx);
+            
+            // Render the text based on renderType
+            if (this.renderType === 'fill') {
+                ctx.fillStyle = clr;
+                ctx.fillText(this.text, this.padding.w, meas.baseln + this.padding.h);
+            } else if (this.renderType === 'stroke') {
+                ctx.strokeStyle = clr;
+                ctx.strokeText(this.text, this.padding.w, meas.baseln + this.padding.h);
+            }
 
         }   finally {
             // restore the drawing context to the state it was given to us in

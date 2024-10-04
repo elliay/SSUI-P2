@@ -70,9 +70,8 @@ export class TopObject extends DrawnObjectBase {
     // For this object we clear the canvas behind the children that we draw
     _drawSelfOnly(ctx) {
         //=== YOUR CODE HERE ===
-        console.log("IS DRAW SELF ONLY BEING CALLED????");
+        // Clears the area in this rectangle
         ctx.clearRect(0, 0, this.w, this.h);
-        // ctx.fillRect(100, 100, 100, 100);
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
     // Override the _findTop() method so to returns this object as the top we have been
@@ -131,6 +130,7 @@ export class TopObject extends DrawnObjectBase {
                 this._damageRectH = this.h;
                 // do the actual drawing from here down the tree
                 //=== YOUR CODE HERE ===
+                // Draws all the way down the tree bc draw() draws itself and its children
                 this.draw(this.canvasContext);
             }
             catch (err) {
@@ -161,11 +161,20 @@ export class TopObject extends DrawnObjectBase {
     // damage instead of passing it up the tree (since there is no up  from here).
     damageArea(xv, yv, wv, hv) {
         //=== YOUR CODE HERE ===
-        this._damageRectX = Math.min(this.x, xv);
-        this._damageRectY = Math.min(this.y, yv);
-        this._damageRectW = Math.max(this.w, wv);
-        this._damageRectH = Math.max(this.h, hv);
-        console.log(this._damageRectX, this._damageRectY, this._damageRectW, this._damageRectH);
+        if (this.damaged) {
+            // If already damaged update damage area
+            this._damageRectX = Math.min(this.x, xv);
+            this._damageRectY = Math.min(this.y, yv);
+            this._damageRectW = Math.max(this.w, wv);
+            this._damageRectH = Math.max(this.h, hv);
+        }
+        else {
+            // If not already damaged set area to input parameters
+            this._damageRectX = xv;
+            this._damageRectY = yv;
+            this._damageRectW = wv;
+            this._damageRectH = hv;
+        }
         this._damaged = true;
     }
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .  

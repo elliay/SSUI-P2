@@ -91,7 +91,7 @@ export class Row extends Group {
     //
     // Our width is set to the width determined by stacking our children horizontally.
     protected override _doLocalSizing(): void {
-        //=== YOUR CODE HERE ===max};
+        //=== YOUR CODE HERE ===};
         let minWidth = 0;
         let naturalWidth = 0;
         let maxWidth = 0;
@@ -180,10 +180,10 @@ export class Row extends Group {
         //=== YOUR CODE HERE ===
         for (let child of this.children) {
             if (child instanceof Spring) {
-                numSprings++;
+                numSprings++; // Count number of springs
             } else {
-                natSum += child.naturalW; // Sum natural heights of non-spring children
-                availCompr += (child.naturalW - child.minW); // Total compressibility (natural - min)
+                natSum += child.naturalW; // Sum natural widths of non-spring children
+                availCompr += (child.naturalW - child.minW); // Sum total compressibility
             }
         }
 
@@ -198,13 +198,12 @@ export class Row extends Group {
     // the space at the right of the row as a fallback strategy).
     protected _expandChildSprings(excess: number, numSprings: number): void {
         //=== YOUR CODE HERE ===
-        if (numSprings === 0) return; // If no springs, exit
+        if (numSprings === 0) return;
 
         let expansionPerSpring = excess / numSprings; // Distribute excess equally among springs
-
         for (let child of this.children) {
             if (child instanceof Spring) {
-                child.w += expansionPerSpring; // Increase height of springs
+                child.w = expansionPerSpring; // Spring width is the expansion amount
             }
         }
     }
@@ -227,12 +226,11 @@ export class Row extends Group {
         // from the natural height of that child, to get the assigned height.
         for (let child of this.children) {
             //=== YOUR CODE HERE ===
-            if (!(child instanceof Spring)) {
-                let compressibility = child.naturalW - child.minW;
-                let compressionRatio = compressibility / availCompr;
-                let reduction = compressionRatio * shortfall;
-
-                child.w = child.naturalW - reduction; // Compress child size based on ratio
+            if (!(child instanceof Spring)) { // If child is not a spring
+                // Calculate their width after compression
+                let compr = child.naturalW - child.minW;
+                let comprFrac = compr / availCompr;
+                child.w = child.naturalW - (comprFrac * shortfall);
             }
         }
     }
@@ -280,11 +278,11 @@ export class Row extends Group {
         //=== YOUR CODE HERE ===
         for (let child of this.children) {
             if (this.hJustification === 'center') {
-                child.x = (this.w - child.w) / 2; // Center horizontally
-            } else if (this.hJustification === 'bottom') {
-                child.x = this.h - child.h; // Align bottom
+                child.y = (this.h - child.h) / 2; // Center horizontally
+            } else if (this.hJustification === 'top') {
+                child.y = this.h - child.h; // Align top
             } else {
-                child.x = 0; // Align top (default)
+                child.y = 0; // Align bottom
             }
         }
     }

@@ -19,7 +19,7 @@ import { Err } from "./Err.js";
 import { DrawableImage } from "./DrawableImage.js";
 import { TopObject } from "./TopObject.js";
 import { FilledObject } from "./FilledObject.js";
-import { TextObject_debug } from "./TextObject.js";
+import { TextObject, TextObject_debug } from "./TextObject.js";
 import { IconObject } from "./IconOjbect.js";
 // Layout related subclasses
 import { Column_debug } from "./Column.js";
@@ -41,18 +41,16 @@ export function runTests() {
     console.log("-------------------------");
     // set up the tree with all the test objects
     testFilled(root);
-    // testIcon(root, 725, 10);
-    // testText(root, 200, 50);
-    // testCol(root, 375, 300);
-    // testRow(root, 10, 600);
-    // testRowCol(root, 700, 350);
+    testIcon(root, 725, 10);
+    testText(root, 200, 50);
+    testCol(root, 375, 300);
+    testRow(root, 10, 600);
+    testRowCol(root, 700, 350);
     // tests we are no longer using
     // testDrawableImage(root.canvasContext, 700, 300); // no longer works...
     // testErr(); // intentionally throws an exception!
     // put in a text object to prompt for our interactive testing
-    // root.addChild(new TextObject(10,768-50, 
-    //                              "Press and drag inside any object to resize it", 
-    //                              "40px sans-serif", 0, "red" ));
+    root.addChild(new TextObject(10, 768 - 50, "Press and drag inside any object to resize it", "40px sans-serif", 0, "red"));
     // draw everything
     root.layoutAndDrawAll();
     // Enable extra redraws for damage declared due to "late" asynchronous image loads
@@ -219,22 +217,14 @@ const blueishColors = [
 ];
 //-------------------------------------------------------------------
 function testFilled(top) {
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 10; i++) {
         let cl = blueishColors[(blueishColors.length - 1 - (i * 2 + 15)) % blueishColors.length];
         let aChild = new FilledObject(i * 25, i * 50, 100, 100, cl);
         aChild.addChild(new FilledObject(20, 10, 20, 200, 'gray'));
-        // aChild.addChild(new FilledObject(25,15,200,25,0x6E260E)
-        //         .addChild(new FilledObject(5,7,10,10,'white')));
+        aChild.addChild(new FilledObject(25, 15, 200, 25, 0x6E260E)
+            .addChild(new FilledObject(5, 7, 10, 10, 'white')));
         top.addChild(aChild);
     }
-    // for (let i = 0; i < 10; i++) {
-    //     let cl = blueishColors[(blueishColors.length-1-(i*2+15)) % blueishColors.length];
-    //     let aChild = new FilledObject(i*25,i*50, 100,100, cl);
-    //     aChild.addChild(new FilledObject(20,10,20,200,'gray'));
-    //     aChild.addChild(new FilledObject(25,15,200,25,0x6E260E)
-    //             .addChild(new FilledObject(5,7,10,10,'white')));
-    //     top.addChild(aChild);
-    // }
 }
 //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 function testIcon(top, x, y) {

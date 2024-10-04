@@ -114,7 +114,7 @@ export class DrawnObjectBase {
 
             //=== YOUR CODE HERE ===
             this._x = v;
-            // Declare damage in the new position
+            // Declare damage
             this.damageAll();
         }
     }
@@ -127,7 +127,7 @@ export class DrawnObjectBase {
         //=== YOUR CODE HERE ===
         if (v !== this._y) {
             this._y = v;
-            // Declare damage in the new position
+            // Declare damage
             this.damageAll();
         }
     }
@@ -149,8 +149,11 @@ export class DrawnObjectBase {
     public set w(v: number) {
         //=== YOUR CODE HERE ===
         if (v !== this._w) {
+            // Declare damage before
+            this.damageAll();
+            //Ensure new width fits in config
             this._w = SizeConfig.withinConfig(v, this._wConfig);
-            // Declare damage for the new size
+            // Declare damage after
             this.damageAll();
         }
 
@@ -165,6 +168,7 @@ export class DrawnObjectBase {
         //=== YOUR CODE HERE ===
         if (!SizeConfig.eq(this._wConfig, v)) {
             this._wConfig = v;
+            //Declare damage
             this.damageAll();
         }
     }
@@ -193,6 +197,9 @@ export class DrawnObjectBase {
     public set h(v: number) {
         //=== YOUR CODE HERE ===
         if (v !== this._h) {
+            // Declare damage before
+            this.damageAll();
+            // Ensure new height fits within config
             this._h = SizeConfig.withinConfig(v, this._hConfig);
             // Declare damage for the new size
             this.damageAll();
@@ -208,6 +215,7 @@ export class DrawnObjectBase {
         //=== YOUR CODE HERE ===
         if (!SizeConfig.eq(this._hConfig, v)) {
             this._hConfig = v;
+            // Declare damage
             this.damageAll();
         }
     }
@@ -245,6 +253,7 @@ export class DrawnObjectBase {
         //=== YOUR CODE HERE ===
         if (v !== this._visible) {
             this._visible = v;
+            // Declare damage
             this.damageAll();
         }
     }
@@ -468,10 +477,9 @@ export class DrawnObjectBase {
     public applyClip(ctx: DrawContext,
         clipx: number, clipy: number, clipw: number, cliph: number) {
         //=== YOUR CODE HERE ===
-        // ctx.save(); // Save the current state of the context
-        ctx.beginPath(); // Begin a new path for the clipping region
-        ctx.rect(clipx, clipy, clipw, cliph); // Define the rectangle
-        ctx.clip(); // Apply the clipping path
+        ctx.beginPath(); 
+        ctx.rect(clipx, clipy, clipw, cliph); // Define clipping rectangle
+        ctx.clip();
     }
 
     // Utility routine to create a new rectangular path at our bounding box.
@@ -508,8 +516,10 @@ export class DrawnObjectBase {
     // drawing between or over children) is desired, this method should be overridden.
     public draw(ctx: DrawContext): void {
         if (this.visible) {
+            // console.log("draw is being called")
             this._drawSelfOnly(ctx);
             this._drawChildren(ctx);
+            // console.log("draw function finished");
         }
     }
 
@@ -538,9 +548,7 @@ export class DrawnObjectBase {
 
         //=== YOUR CODE HERE ===
         let child = this.children[childIndx];
-        ctx.translate(child.x, child.y); // Translate the context to the child's position
-
-        // Apply the clipping rectangle
+        ctx.translate(child.x, child.y); // Translate ctx to the child's position
         this.applyClip(ctx, 0, 0, child.w, child.h); // Clip to the child's bounding box
     }
 
@@ -563,7 +571,7 @@ export class DrawnObjectBase {
     protected _drawChildren(ctx: DrawContext) {
         for (let ch: number = 0; ch < this._children.length; ch++) {
             // do the setup for drawing this child
-            console.log("I am drawing children???");
+            // console.log("I am drawing children???");
             this._startChildDraw(ch, ctx);
 
             // do the actual drawing for this child
@@ -575,6 +583,7 @@ export class DrawnObjectBase {
             // exception to be propagated out, but will force the call to _endChildDraw() 
             // before we leave this function.
             try {
+                // console.log("calling child.draw")
                 this.children[ch].draw(ctx);
             } finally {
                 // (always) do revert the setup for drawing this child
@@ -672,6 +681,7 @@ export class DrawnObjectBase {
     public damageArea(xv: number, yv: number, wv: number, hv: number): void {
         //=== YOUR CODE HERE ===
         if (this.parent) {
+            // Passes damage report up the tree via parent
             this.parent._damageFromChild(this, xv, yv, wv, hv);
         }
     }
@@ -697,12 +707,12 @@ export class DrawnObjectBase {
         xInChildCoords: number, yInChildCoords: number,
         wv: number, hv: number): void {
         //=== YOUR CODE HERE ===
-        // Convert child's coordinates to this (parent) object's coordinates
-        let xInParent = child.x + xInChildCoords;
-        let yInParent = child.y + yInChildCoords;
+        // Convert child's coordinates to parent coordinates
+        let xInParentCoords = child.x + xInChildCoords;
+        let yInParentCoords = child.y + yInChildCoords;
 
-        // Report the damage for this object
-        this.damageArea(xInParent, yInParent, wv, hv);
+        // Declare damage in this area
+        this.damageArea(xInParentCoords, yInParentCoords, wv, hv);
     }
 
     //. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
